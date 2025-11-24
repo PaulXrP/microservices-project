@@ -7,6 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -19,6 +22,7 @@ import java.util.UUID;
 @Builder
 @Table(name = "products")
 @Data
+@EntityListeners(AuditingEntityListener.class) // <--- CRITICAL: Don't forget this!
 public class Product {
 
     @Id
@@ -37,11 +41,13 @@ public class Product {
     @Column(nullable = false)
     private BigDecimal price;
 
-    @CreationTimestamp
+//    @CreationTimestamp
+    @CreatedDate // <--- Changed from @CreationTimestamp
     @Column(updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
+//    @UpdateTimestamp
+    @LastModifiedDate // <--- Changed from @UpdateTimestamp
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 }

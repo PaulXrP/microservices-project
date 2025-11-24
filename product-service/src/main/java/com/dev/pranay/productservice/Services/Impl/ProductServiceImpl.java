@@ -8,6 +8,8 @@ import com.dev.pranay.productservice.Repositories.ProductRepository;
 import com.dev.pranay.productservice.Services.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "productList", allEntries = true) // <--- CLEAR THE CACHE
     public ProductResponse createProduct(ProductRequest productRequest) {
 
         log.info("Attempting to create product with SKU: {}", productRequest.getSkuCode());
@@ -75,8 +78,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "productList")
     public List<ProductResponse> getAllProducts() {
-        log.info("Fetching all products.");
+        log.info("Fetching all products from DATABASE"); // This log proves we hit the DB
         return productRepository.findAll()
                 .stream()
                 .map(this::mapToProductResponse)
@@ -85,6 +89,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "productList", allEntries = true) // <--- CLEAR THE CACHE
     public ProductResponse updateProduct(UUID id, ProductRequest productRequest) {
         log.info("Attempting to update product with ID: {}", id);
 
@@ -119,6 +124,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "productList", allEntries = true) // <--- CLEAR THE CACHE
     public void deleteProduct(UUID id) {
         log.info("Attempting to delete product with ID: {}", id);
 
